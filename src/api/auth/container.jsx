@@ -47,9 +47,14 @@ export default () => (
                         facebook
                     </Button>
                 </a>
-                <a href="/auth/flickr">
-                    <Button label="Continue with Flickr" fullWidth>
-                        flickr
+                <a href="/auth/google">
+                    <Button label="Continue with google" fullWidth>
+                        google
+                    </Button>
+                </a>
+                <a href="/auth/github">
+                    <Button label="Continue with github" fullWidth>
+                        github
                     </Button>
                 </a>
             </form>

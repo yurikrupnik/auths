@@ -42,21 +42,23 @@ const localStrategyHandler = (req, email, password, done) => User.findOne({ emai
     .then(checkUserByEmailAndPass(email, password, done))
     .catch(done);
 
-const socialAppsRegisterCallback = (profile, done) => () => User.findOne({ id: profile.id })
-    .then((user) => {
-        if (user) {
-            done(null, user);
-        } else {
-            const { provider } = profile;
-            const newUser = new User({
-                id: profile.id,
-                email: profile.email || '',
-                name: provider === 'facebook' ? profile.displayName : profile.fullName,
-            });
-            newUser.save(done);
-        }
-    })
-    .catch(done);
+const socialAppsRegisterCallback = (profile, done) => () => {
+    return User.findOne({id: profile.id})
+        .then((user) => {
+            if (user) {
+                done(null, user);
+            } else {
+                const {provider} = profile;
+                const newUser = new User({
+                    id: profile.id,
+                    email: profile.email || 'joe@email.com',
+                    name: provider === 'facebook' || provider === 'github' ? profile.displayName : profile.fullName,
+                });
+                newUser.save(done);
+            }
+        })
+        .catch(done);
+};
 
 const socialNetworkStrategy = (token, refreshTocken, profile, done) => process
     .nextTick(socialAppsRegisterCallback(profile, done));
@@ -68,7 +70,7 @@ const setSocialAuth = provider => passport.authenticate(provider, {
 }); // handling fail with router
 
 const createSocialNetworkRoutes = (app) => {
-    const socialNetworks = ['facebook'];
+    const socialNetworks = ['facebook', 'github', 'google'];
     socialNetworks.forEach((provider) => { // register middlewares
         app.get(`/auth/${provider}`, setSocialAuth(provider));
         app.get(`/auth/${provider}/callback`, setSocialAuth(provider));
